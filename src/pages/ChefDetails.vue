@@ -9,7 +9,8 @@
             <ul class="mt-2">
                 <li v-for="dish in chef?.dishes" :key="dish.name" class="text-gray-700 flex justify-between items-center">
                     <span>{{ dish.name }} - {{ dish.price }}€</span>
-                    <button @click="addToCart(dish)" class="mt-4 px-2 py-1 text-sm bg-green-500 text-white rounded-md hover:bg-green-600">Ajouter au panier</button>
+                    <button v-if="isAuthenticated" @click="addToCart(dish)" class="mt-4 px-2 py-1 text-sm bg-green-500 text-white rounded-md hover:bg-green-600">Ajouter au panier</button>
+                    <span v-else class="text-sm text-gray-500">Connectez-vous pour ajouter au panier</span>
                 </li>
             </ul>
             <router-link to="/chefs" class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Retour</router-link>
@@ -25,6 +26,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import Navbar from '../components/NavBar.vue';
 import { useCartStore } from '../stores/CartStore';
+import { useAuthStore } from '../stores/AuthStore';
 
 const route = useRoute();
 const chef = ref<{ id: number; name: string; specialty: string; dishes: { name: string, price: number }[]; image: string } | null>(null);
@@ -46,6 +48,8 @@ const chefsData = [
 ];
 
 const cartStore = useCartStore();
+const authStore = useAuthStore();
+const isAuthenticated = authStore.isAuthenticated;
 
 const addToCart = (dish: { name: string, price: number }) => {
     cartStore.addToCart(dish);
