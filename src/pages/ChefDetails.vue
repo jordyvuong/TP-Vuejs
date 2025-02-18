@@ -7,8 +7,8 @@
             <p class="text-lg text-gray-700 mt-2">Spécialité : {{ chef?.specialty }}</p>
             <h2 class="text-2xl font-semibold mt-4">Plats proposés</h2>
             <ul class="mt-2">
-                <li v-for="dish in chef?.dishes" :key="dish" class="text-gray-700 flex justify-between items-center">
-                    <span>{{ dish }}</span>
+                <li v-for="dish in chef?.dishes" :key="dish.name" class="text-gray-700 flex justify-between items-center">
+                    <span>{{ dish.name }} - {{ dish.price }}€</span>
                     <button @click="addToCart(dish)" class="mt-4 px-2 py-1 text-sm bg-green-500 text-white rounded-md hover:bg-green-600">Ajouter au panier</button>
                 </li>
             </ul>
@@ -27,19 +27,28 @@ import Navbar from '../components/NavBar.vue';
 import { useCartStore } from '../stores/CartStore';
 
 const route = useRoute();
-const chef = ref<{ id: number; name: string; specialty: string; dishes: string[]; image: string } | null>(null);
+const chef = ref<{ id: number; name: string; specialty: string; dishes: { name: string, price: number }[]; image: string } | null>(null);
 const showPopup = ref(false);
 
 const chefsData = [
-    { id: 1, name: 'Chef Quentin', specialty: 'Cuisine Française', dishes: ['Boeuf Bourguignon', 'Ratatouille'], image: 'https://media.licdn.com/dms/image/v2/D4E35AQEXU5NGG_CqeQ/profile-framedphoto-shrink_800_800/B4EZUUXG0gHMAg-/0/1739803356813?e=1740499200&v=beta&t=XY6cxQRUw3-tLt4zkhORT18Td4tqjWtnwnPojWep-x8' },
-    { id: 2, name: 'Chef Anthony', specialty: 'Cuisine Asiatique', dishes: ['Soupe Phô', 'Loc lac'], image: 'https://media.licdn.com/dms/image/v2/D4D35AQHQQ9rmvD7WEA/profile-framedphoto-shrink_800_800/profile-framedphoto-shrink_800_800/0/1738860926923?e=1740499200&v=beta&t=FmsuJD0xPeVdj_PEl9PrREbCPnsBnMVkxp05yA4pdsk' },
-    { id: 3, name: 'Chef Johan', specialty: 'Cuisine Espagnol', dishes: ['Paella', 'Tortilla española'], image: 'https://media.licdn.com/dms/image/v2/D4E03AQEHYVf2BTOkGA/profile-displayphoto-shrink_800_800/B4EZS5dH62HcAc-/0/1738278207813?e=1745452800&v=beta&t=zDBr3Lkq3gTVfL9xrteLgkfD3dcA18RzaaTZ5nsYbpY' }
+    { id: 1, name: 'Chef Quentin', specialty: 'Cuisine Française', dishes: [
+        { name: 'Boeuf Bourguignon', price: 15 },
+        { name: 'Ratatouille', price: 10 }
+    ], image: 'https://media.licdn.com/dms/image/v2/D4E35AQEXU5NGG_CqeQ/profile-framedphoto-shrink_800_800/B4EZUUXG0gHMAg-/0/1739803356813?e=1740499200&v=beta&t=XY6cxQRUw3-tLt4zkhORT18Td4tqjWtnwnPojWep-x8' },
+    { id: 2, name: 'Chef Anthony', specialty: 'Cuisine Asiatique', dishes: [
+        { name: 'Soupe Phô', price: 12 },
+        { name: 'Loc lac', price: 14 }
+    ], image: 'https://media.licdn.com/dms/image/v2/D4D35AQHQQ9rmvD7WEA/profile-framedphoto-shrink_800_800/profile-framedphoto-shrink_800_800/0/1738860926923?e=1740499200&v=beta&t=FmsuJD0xPeVdj_PEl9PrREbCPnsBnMVkxp05yA4pdsk' },
+    { id: 3, name: 'Chef Johan', specialty: 'Cuisine Espagnol', dishes: [
+        { name: 'Paella', price: 18 },
+        { name: 'Tortilla española', price: 9 }
+    ], image: 'https://media.licdn.com/dms/image/v2/D4E03AQEHYVf2BTOkGA/profile-displayphoto-shrink_800_800/B4EZS5dH62HcAc-/0/1738278207813?e=1745452800&v=beta&t=zDBr3Lkq3gTVfL9xrteLgkfD3dcA18RzaaTZ5nsYbpY' }
 ];
 
 const cartStore = useCartStore();
 
-const addToCart = (dish: string) => {
-    cartStore.addToCart({ name: dish, price: Math.floor(Math.random() * 20) + 10 });
+const addToCart = (dish: { name: string, price: number }) => {
+    cartStore.addToCart(dish);
     showPopup.value = true;
     setTimeout(() => {
         showPopup.value = false;
